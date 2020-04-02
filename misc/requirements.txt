@@ -1,0 +1,5 @@
+# Versions are locked down for repeatability, not for a specific 
+# functional issue.
+dash == 1.9.0
+pandas == 1.0.1
+requests == 2.21.0

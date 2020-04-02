@@ -1,0 +1,49 @@
+#! /bin/sh
+#
+# chkconfig: 2345 80 30
+# description: Device Inspector Service
+#
+# Service control script for Device Inspector
+###
+export HL_USER=ec2-user
+export HL_HOME=/opt/hl-dev
+export CONF_DIR=/etc/opt/hl-dev
+export JMX_PORT=5000
+export INSTANCE_ID=`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`
+export AWS_HOSTNAME=`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`
+# Next two exports required by Flask Click project for Unicode support
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+
+case "$1" in
+  start)
+        cd $HL_HOME
+        python3 --version
+        echo "Starting Dev Device Inspector..."
+
+        nohup `PYTHONPATH=/opt/hl-dev/device_inspector/lib:/opt/hl-dev/device_inspector/di DI_CONF_FILE=/opt/hl-dev/di.conf /opt/hl-dev/device_inspector/run.sh >>$HL_HOME/log/di_err.log 2>&1` &
+
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && echo -n Success
+        [ $RETVAL -ne 0 ] && echo -n Failure
+        echo "."
+        #sleep a bit so we can pick up the PID
+        sleep 5
+        ps -ef | grep python3 | grep flask | awk '{print $2}' > /var/tmp/device_inspector.pid
+        ;;
+
+  stop)
+        echo "Stopping Dev Device Inspector..."
+        kill -9 `cat /var/tmp/device_inspector.pid`
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && echo -n Success
+        [ $RETVAL -ne 0 ] && echo -n Failure
+        echo "."
+        ;;
+
+ *)
+        echo "Usage: /sbin/service device_inspector {start|stop}"
+        exit 1
+esac
+
+exit 0
