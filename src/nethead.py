@@ -33,6 +33,8 @@ def _collect_data():
     """Collects data from Graphite into a dataframe.
     """
     url = 'http://localhost:8089/render'
+    #url = 'http://[2601:18e:c501:6670:1bae:909f:de25:9a2e]:8089/render'
+
     params = {
         'target': 'temp.3303.0',
         'from': 'now-6hr',
