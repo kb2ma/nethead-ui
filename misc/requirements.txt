@@ -1,5 +1,6 @@
-# Versions are locked down for repeatability, not for a specific 
-# functional issue.
-dash == 1.9.0
-pandas == 1.0.1
-requests == 2.21.0
+# Versions are locked down for repeatability, not for a specific functional
+# issue.
+dash == 1.12.0
+pandas == 1.0.4
+requests == 2.23.0
+SQLAlchemy == 1.3.17
