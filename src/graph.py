@@ -17,15 +17,15 @@ import requests
 Refreshes graph once a minute.
 """
 
-def _collect_data():
+def _collect_data(device_sn):
     """Collects data from Graphite into a dataframe.
     """
     url = 'http://localhost:8089/render'
     #url = 'http://[2601:18e:c501:6670:1bae:909f:de25:9a2e]:8089/render'
 
     params = {
-        'target': 'temp.3303.0',
-        'from': 'now-6h',
+        'target': 'device.{}.object.3303.0'.format(device_sn),
+        'from': 'now-1d',
         'format': 'json'
     }
 
@@ -43,7 +43,7 @@ def _collect_data():
 def tab_layout(deviceSn, device_desc):
     global graph;
     if deviceSn and device_desc == 'Status: found':
-        df = _collect_data()
+        df = _collect_data(deviceSn)
         fig = px.line(df, x="time", y="temp")
 
         return html.Div(id='graph-div', children=[
@@ -58,9 +58,10 @@ def tab_layout(deviceSn, device_desc):
 
 
 @app.callback(Output('graph-ref', 'figure'),
-              [Input('graph-refresh', 'n_intervals')])
-def updateGraph(n):
-    df = _collect_data()
+              [Input('graph-refresh', 'n_intervals')],
+              [State('device-sn', 'value')])
+def updateGraph(n, device_sn):
+    df = _collect_data(device_sn)
     applog.debug("Refreshing graph")
     return px.line(df, x="time", y="temp")
 
