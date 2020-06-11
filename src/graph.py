@@ -57,11 +57,10 @@ def tab_layout(deviceSn, device_desc):
         return html.Div(id='graph-div', children=[ 'No valid device' ])
 
 
-@app.callback(Output('graph-ref', 'figure'),
+@app.callback([Output('graph-ref', 'figure'),
+               Output('device-desc2', 'children')],
               [Input('graph-refresh', 'n_intervals')],
               [State('device-sn', 'value')])
 def updateGraph(n, device_sn):
     df = _collect_data(device_sn)
-    applog.debug("Refreshing graph")
-    return px.line(df, x="time", y="temp")
-
+    return px.line(df, x="time", y="temp"), 'data as of {}'.format(df.iloc[-1,1])

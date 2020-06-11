@@ -60,8 +60,9 @@ def serve_layout():
                 html.Td(html.Button(id='submit-button', n_clicks=0, children='Inspect')),
                 html.Td(
                     dcc.Loading([html.Div(id='device-desc',
-                                 children=gen_device_status('no device'))
-                ]))
+                                 children=gen_device_status('no device')),
+                ])),
+                html.Td(html.Div(id='device-desc2', children=''))
             ])]
         ),
         dcc.Tabs(id="tabs", value='', children=[
