@@ -2,6 +2,7 @@ import dash
 import flask
 import logging
 from logging.handlers import TimedRotatingFileHandler
+import sqlalchemy as sqla
 
 """Application level setup for for NetHead UI Dash/Flask application."""
 
@@ -35,5 +36,13 @@ for h in logging.getLogger('app').handlers:
 
 # applog provides a convenient name when logging
 applog = server.logger
+applog.info('Logging set up OK')
 
 app.title = 'NetHead'
+# for multi-page (or tabbed) apps
+app.config.suppress_callback_exceptions = True
+
+# Config database access
+connStr = 'sqlite:///{}'
+db = sqla.create_engine(connStr.format('/home/kbee/dev/leshan/share/nethead.db'))
+applog.info('Initialized config db: {}'.format(db))
