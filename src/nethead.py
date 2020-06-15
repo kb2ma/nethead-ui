@@ -17,12 +17,12 @@ import config
 """Establish constant since text used for comparisons"""
 DEVICE_NOT_FOUND = 'Status: not found'
 
-def gen_device_df(deviceSn):
+def gen_device_df(device_sn):
     """Generates dataframe for a device from config db."""
     rawSql = "SELECT dv.serial_number \
         FROM device dv \
         WHERE dv.serial_number = '{}'"
-    sql = rawSql.format(deviceSn)
+    sql = rawSql.format(device_sn)
 
     df = pd.read_sql(sql, db)
     return df
@@ -83,18 +83,18 @@ app.layout = serve_layout
              [Input('submit-button', 'n_clicks'),
               Input('device-sn', 'n_submit')],
              [State('device-sn', 'value')])
-def render_device_content(n_clicks, n_submits, deviceSn):
+def render_device_content(n_clicks, n_submits, device_sn):
     """Shows device description text when Submit clicked or Enter pressed.
     """
-    if (not n_clicks and not n_submits) or not deviceSn:
+    if (not n_clicks and not n_submits) or not device_sn:
         return gen_device_status('no device')
-    df = gen_device_df(deviceSn)
+    df = gen_device_df(device_sn)
 
     if df.empty:
-        applog.debug('Device {} not found'.format(deviceSn))
+        applog.debug('Device {} not found'.format(device_sn))
         return gen_device_status('not found')
     else:
-        applog.debug('Device {} found'.format(deviceSn))
+        applog.debug('Device {} found'.format(device_sn))
         return gen_device_status('found')
 
 
@@ -103,22 +103,22 @@ def render_device_content(n_clicks, n_submits, deviceSn):
               [Input('device-desc', 'children')],
               [State('device-sn', 'value'),
                State('tabs', 'value')])
-def render_tabs_content(device_desc, deviceSn, tabId):
+def render_tabs_content(device_desc, device_sn, tabId):
     """Renders content for *all* tabs when device description updated.
     Content visibility follows selected tab.
 
     Also select the Logs tab if no selected tab and a device has been 
     selected.
     """
-    logsDiv = graph.tab_layout(deviceSn, device_desc)
+    logsDiv = graph.tab_layout(device_sn, device_desc)
     logsDiv.hidden = (tabId != 'tab-graph')
 
-    configDiv = config.tab_layout(deviceSn, device_desc)
+    configDiv = config.tab_layout(device_sn, device_desc)
     configDiv.hidden = (tabId != 'tab-config')
 
     if device_desc == DEVICE_NOT_FOUND:
         outputTab = ''
-    elif not tabId and deviceSn:
+    elif not tabId and device_sn:
         outputTab = 'tab-graph'
     else:
         outputTab = tabId

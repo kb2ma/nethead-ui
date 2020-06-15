@@ -40,10 +40,9 @@ def _collect_data(device_sn):
     return df
 
 
-def tab_layout(deviceSn, device_desc):
-    global graph;
-    if deviceSn and device_desc == 'Status: found':
-        df = _collect_data(deviceSn)
+def tab_layout(device_sn, device_desc):
+    if device_sn and device_desc == 'Status: found':
+        df = _collect_data(device_sn)
         fig = px.line(df, x="time", y="temp")
 
         return html.Div(id='graph-div', children=[
