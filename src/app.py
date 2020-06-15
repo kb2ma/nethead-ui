@@ -19,7 +19,7 @@ except:
 # set up logging
 _handler = TimedRotatingFileHandler(server.config['LOGGING_PATHNAME'], 
                                     when='D')
-_fmt_str = '[%(asctime)s,%(msecs)03d] %(name)s %(levelname)s %(message)s'
+_fmt_str = '[%(asctime)s,%(msecs)03d] %(name)s %(levelname)s %(filename)s:%(lineno)d %(message)s'
 _fmt = logging.Formatter(fmt=_fmt_str, datefmt='%H:%M:%S')
 _handler.setFormatter(_fmt)
 
