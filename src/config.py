@@ -3,9 +3,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 from dash.dependencies import Input, Output, State
-from app import app
-from app import applog
-from app import db
+
+from app import app, applog, db
 
 import pandas as pd
 

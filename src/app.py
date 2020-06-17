@@ -1,4 +1,5 @@
 import dash
+import dash_bootstrap_components as dbc
 import flask
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -7,7 +8,7 @@ import sqlalchemy as sqla
 """Application level setup for for NetHead UI Dash/Flask application."""
 
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server)
+app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.FLATLY])
 
 # initialize configuration constants
 try:
@@ -38,7 +39,7 @@ for h in logging.getLogger('app').handlers:
 applog = server.logger
 applog.info('Logging set up OK')
 
-app.title = 'NetHead'
+app.title = 'Nethead'
 # for multi-page (or tabbed) apps
 app.config.suppress_callback_exceptions = True
 
