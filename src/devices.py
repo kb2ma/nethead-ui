@@ -11,21 +11,33 @@ import pandas as pd
 """Device list display"""
 
 def _gen_registration_df():
-    """Generate Pandas dataframe from registration rows."""
-    sql = "SELECT r.reg_id, r.endpoint, r.identity, r.lifetime, r.links \
+    """Generate Pandas dataframe from registration query."""
+    sql = "SELECT r.reg_id, r.endpoint, r.identity, r.lifetime, datetime(r.last_update, 'unixepoch') as alias_last_update \
         FROM registration r"
 
     df = pd.read_sql(sql, db)
     return df
 
 
-def _gen_table_cols(colList):
+def _gen_table_cols(col_ids):
     """Generate Dash table columns in the expected format.
 
-    :param colList: list of columns; must be in format <table-alias.name>,
-                    like "s.serial_number"
+    :param col_ids: list of columns; must be in format <table-alias.name>,
+                    like "s.serial_number", as in the SQL select statement
+                    -- except for derived column values which must literally
+                    use "alias." plus the name.
+    :return: List of dictionaries, where ach contains an 'id' and a 'name' key
+             for a Dash DataTable.
     """
-    return [{'id' : col, 'name' : col} for col in colList]
+    col_list = []
+    for col in col_ids:
+        split_col = col.partition('.')
+        if split_col[0] == 'alias':
+            col_list.append({'id' : 'alias_{}'.format(split_col[2]), 'name' : split_col[2]})
+        else:
+            col_list.append({'id' : split_col[2], 'name' : split_col[2]})
+
+    return col_list
 
 
 def page_layout():
@@ -33,8 +45,7 @@ def page_layout():
     if not df.empty:
         return [
             dash_table.DataTable(id='reg-table',
-                columns=_gen_table_cols(['reg_id', 'endpoint', 'identity', 'lifetime', 'links']),
+                columns=_gen_table_cols(['r.endpoint', 'r.reg_id', 'r.identity', 'r.lifetime', 'alias.last_update']),
                 data=(df.to_dict('records'))
         )]
-    else:
-        return 'No devices found'
+    return 'No devices found'
