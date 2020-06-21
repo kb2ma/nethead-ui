@@ -31,8 +31,7 @@ def _gen_registration_df():
     sql = "SELECT r.reg_id, r.endpoint, r.identity, r.lifetime, datetime(r.last_update, 'unixepoch') as alias_last_update \
         FROM registration r"
 
-    df = pd.read_sql(sql, db)
-    return df
+    return pd.read_sql(sql, db)
 
 
 def _gen_table_cols(col_ids):
@@ -47,12 +46,16 @@ def _gen_table_cols(col_ids):
     """
     col_list = []
     for col in col_ids:
+        col_dict = {}
+
         split_col = col.partition('.')
         if split_col[0] == 'alias':
-            col_list.append({'id' : 'alias_{}'.format(split_col[2]),
-                             'name' : split_col[2]})
+            col_dict['id'] = 'alias_{}'.format(split_col[2])
         else:
-            col_list.append({'id' : split_col[2], 'name' : split_col[2]})
+            col_dict['id'] = split_col[2]
+        col_dict['name'] = split_col[2]
+
+        col_list.append(col_dict)
 
     return col_list
 
@@ -64,8 +67,11 @@ def page_layout():
     df = _gen_registration_df()
     if not df.empty:
         return [
+            dcc.Location(id='devices-url'),
+            html.H5("Devices"),
             dash_table.DataTable(id='reg-table', columns=columns,
-                                 data=df.to_dict('records')),
+                                 data=df.to_dict('records'),
+                                 row_selectable='single'),
             dcc.Interval(
                 id='reg-refresh',
                 interval=60*1000, # in milliseconds
@@ -82,3 +88,10 @@ def updateTable(n):
         return df.to_dict('records')
     else:
         raise PreventUpdate
+
+
+@app.callback(Output('devices-url', 'pathname'),
+             [Input('reg-table', 'selected_rows')])
+def viewComponents(selectedRows):
+    if selectedRows:
+        return '/components/1574'

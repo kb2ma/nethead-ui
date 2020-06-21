@@ -20,7 +20,7 @@ from dash.dependencies import Input, Output, State
 
 # Must import server to satisfy Flask even though not used in this module.
 from app import app, applog, db, server
-import devices
+import devices, components
 
 """Main/Top view for NetHead UI."""
 
@@ -52,8 +52,12 @@ def toggle_active_links(pathname):
              [Input('url', 'pathname')]
 )
 def render_page(pathname):
-    if pathname in ['/', '/devices']:
+    if not pathname or (pathname in ['/', '/devices']):
         return devices.page_layout()
-    else:
-        return html.P('The pathname {pathname} was not recognised...')
+    elif pathname.startswith('/components'):
+        segments = pathname.rsplit('/')
+        if len(segments) == 3:
+            return components.page_layout(segments[2])
+
+    return html.P('The pathname {} was not recognised...'.format(pathname))
 
