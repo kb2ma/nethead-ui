@@ -62,7 +62,7 @@ def page_layout(device_id):
     df = _gen_component_df(device_id)
     if not df.empty:
         return [
-            html.H5("Device Components"),
+            html.H5("Components for device " + device_id),
             dash_table.DataTable(id='comp-table', columns=columns,
                                  data=df.to_dict('records'))
         ]
